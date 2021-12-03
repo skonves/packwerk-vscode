@@ -25,7 +25,7 @@
     "vscode:prepublish": "tsc -p ./",
     "format": "tsfmt -r src/*",
     "compile": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
+    "xpostinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test"
   },
   "contributes": {
@@ -102,7 +102,10 @@
     "proxyquire": "^2.1.0",
     "sinon": "^7.3.0",
     "tslint": "^5.1.0",
-    "typescript": "^3.8.3",
-    "vscode": "^1.1.0"
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/vscode": "^1.62.0",
+    "vscode-test": "^1.6.1"
   }
 }
