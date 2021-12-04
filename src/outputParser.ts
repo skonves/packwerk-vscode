@@ -1,4 +1,4 @@
-import { PackwerkOutput, PackwerkFile } from './rubocopOutput';
+import { PackwerkOutput, PackwerkFile } from './packwerkOutput';
 
 const regex = /^(?<file>[^\n]*?):(?<row>\d+):(?<column>\d+)$(?<message>(?<type>[^ ]+).*?'::(?<symbol>.*?)'.*?)^\s?$/gms;
 

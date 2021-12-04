@@ -2,81 +2,14 @@ import {
   PackwerkOutput,
   PackwerkFile,
   PackwerkViolation,
-} from './rubocopOutput';
+} from './packwerkOutput';
 import { TaskQueue, Task } from './taskQueue';
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { getConfig, RubocopConfig } from './configuration';
-import * as os from 'os';
+import { getConfig, PackwerkConfig } from './configuration';
 import { parseOutput } from './outputParser';
-
-export class RubocopAutocorrectProvider
-  implements vscode.DocumentFormattingEditProvider {
-  public provideDocumentFormattingEdits(
-    document: vscode.TextDocument
-  ): vscode.TextEdit[] {
-    const config = getConfig();
-    try {
-      const args = [
-        ...getCommandArguments(document.fileName),
-        '--auto-correct',
-      ];
-      const options = {
-        cwd: getCurrentPath(document.fileName),
-        input: document.getText(),
-      };
-      let stdout;
-      if (config.useBundler) {
-        stdout = cp.execSync(`${config.command} ${args.join(' ')}`, options);
-      } else {
-        stdout = cp.execFileSync(config.command, args, options);
-      }
-
-      return this.onSuccess(document, stdout);
-    } catch (e) {
-      // if there are still some offences not fixed RuboCop will return status 1
-      if (e.status !== 1) {
-        vscode.window.showWarningMessage(
-          'An error occurred during auto-correction'
-        );
-        console.log(e);
-        return [];
-      } else {
-        return this.onSuccess(document, e.stdout);
-      }
-    }
-  }
-
-  // Output of auto-correction looks like this:
-  //
-  // {"metadata": ... {"offense_count":5,"target_file_count":1,"inspected_file_count":1}}====================
-  // def a
-  //   3
-  // end
-  //
-  // So we need to parse out the actual auto-corrected ruby
-  private onSuccess(document: vscode.TextDocument, stdout: Buffer) {
-    const stringOut = stdout.toString();
-    const autoCorrection = stringOut.match(
-      /^.*\n====================(?:\n|\r\n)([.\s\S]*)/m
-    );
-    if (!autoCorrection) {
-      throw new Error(`Error parsing auto-correction from CLI: ${stringOut}`);
-    }
-    return [
-      new vscode.TextEdit(this.getFullRange(document), autoCorrection.pop()),
-    ];
-  }
-
-  private getFullRange(document: vscode.TextDocument): vscode.Range {
-    return new vscode.Range(
-      new vscode.Position(0, 0),
-      document.lineAt(document.lineCount - 1).range.end
-    );
-  }
-}
 
 function isFileUri(uri: vscode.Uri): boolean {
   return uri.scheme === 'file';
@@ -117,8 +50,8 @@ function getCommandArguments(fileName: string): string[] {
   return commandArguments;
 }
 
-export class Rubocop {
-  public config: RubocopConfig;
+export class Packwerk {
+  public config: PackwerkConfig;
   private diag: vscode.DiagnosticCollection;
   private additionalArguments: string[];
   private taskQueue: TaskQueue = new TaskQueue();
@@ -148,15 +81,15 @@ export class Rubocop {
 
     let onDidExec = (error: Error, stdout: string, stderr: string) => {
       this.reportError(error, stderr);
-      let rubocop = this.parse(stdout);
-      if (rubocop === undefined || rubocop === null) {
+      let packwerk = this.parse(stdout);
+      if (packwerk === undefined || packwerk === null) {
         return;
       }
 
       this.diag.delete(uri);
 
       let entries: [vscode.Uri, vscode.Diagnostic[]][] = [];
-      rubocop.files.forEach((file: PackwerkFile) => {
+      packwerk.files.forEach((file: PackwerkFile) => {
         let diagnostics = [];
         file.violations.forEach((offence: PackwerkViolation) => {
           const loc = offence.location;
@@ -187,7 +120,7 @@ export class Rubocop {
       .concat(jsonOutputFormat);
 
     let task = new Task(uri, (token) => {
-      let process = this.executeRubocop(
+      let process = this.executePackwerk(
         args,
         document.getText(),
         { cwd: currentPath },
@@ -219,8 +152,8 @@ export class Rubocop {
     }
   }
 
-  // execute rubocop
-  private executeRubocop(
+  // execute packwerk
+  private executePackwerk(
     args: string[],
     fileContents: string,
     options: cp.ExecOptions,
@@ -237,7 +170,7 @@ export class Rubocop {
     return child;
   }
 
-  // parse rubocop(JSON) output
+  // parse packwerk(JSON) output
   private parse(output: string): PackwerkOutput | null {
     let packwerk: PackwerkOutput;
     if (output.length < 1) {
@@ -263,7 +196,7 @@ export class Rubocop {
     return packwerk;
   }
 
-  // checking rubocop output has error
+  // checking packwerk output has error
   private reportError(error: Error, stderr: string): boolean {
     let errorOutput = stderr.toString();
     if (error && (<any>error).code === 'ENOENT') {
@@ -274,28 +207,11 @@ export class Rubocop {
     } else if (error && (<any>error).code === 127) {
       vscode.window.showWarningMessage(stderr);
       return true;
-    } else if (errorOutput.length > 0 && !this.config.suppressRubocopWarnings) {
+    } else if (errorOutput.length > 0) {
       vscode.window.showWarningMessage(stderr);
       return true;
     }
 
     return false;
-  }
-
-  private severity(sev: string): vscode.DiagnosticSeverity {
-    switch (sev) {
-      case 'refactor':
-        return vscode.DiagnosticSeverity.Hint;
-      case 'convention':
-        return vscode.DiagnosticSeverity.Information;
-      case 'warning':
-        return vscode.DiagnosticSeverity.Warning;
-      case 'error':
-        return vscode.DiagnosticSeverity.Error;
-      case 'fatal':
-        return vscode.DiagnosticSeverity.Error;
-      default:
-        return vscode.DiagnosticSeverity.Error;
-    }
   }
 }

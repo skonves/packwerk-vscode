@@ -2,19 +2,18 @@ import * as vs from 'vscode';
 import * as fs from 'fs';
 import * as cp from 'child_process';
 import * as path from 'path';
-import { Rubocop } from './rubocop';
+import { Packwerk } from './packwerk';
 
-export interface RubocopConfig {
+export interface PackwerkConfig {
   command: string;
   onSave: boolean;
   configFilePath: string;
   useBundler: boolean;
-  suppressRubocopWarnings: boolean;
 }
 
-const detectBundledRubocop: () => boolean = () => {
+const detectBundledPackwerk: () => boolean = () => {
   try {
-    cp.execSync('bundle show rubocop', { cwd: vs.workspace.rootPath });
+    cp.execSync('bundle show packwerk', { cwd: vs.workspace.rootPath });
     return true;
   } catch (e) {
     return false;
@@ -40,28 +39,27 @@ const autodetectExecutePath: (cmd: string) => string = (cmd) => {
 };
 
 /**
- * Read the workspace configuration for 'ruby.rubocop' and return a RubocopConfig.
- * @return {RubocopConfig} config object
+ * Read the workspace configuration for 'ruby.packwerk' and return a PackwerkConfig.
+ * @return {PackwerkConfig} config object
  */
-export const getConfig: () => RubocopConfig = () => {
+export const getConfig: () => PackwerkConfig = () => {
   const cmd = 'bin/packwerk check';
-  const conf = vs.workspace.getConfiguration('ruby.rubocop');
+  const conf = vs.workspace.getConfiguration('ruby.packwerk');
   let useBundler = conf.get('useBundler', false);
   let configPath = conf.get('executePath', '');
-  let suppressRubocopWarnings = conf.get('suppressRubocopWarnings', false);
   let command: string;
 
   // if executePath is present in workspace config, use it.
   if (configPath.length !== 0) {
     command = configPath + cmd;
-  } else if (useBundler || detectBundledRubocop()) {
+  } else if (useBundler || detectBundledPackwerk()) {
     useBundler = true;
     command = `bundle exec ${cmd}`;
   } else {
     const detectedPath = autodetectExecutePath(cmd);
     if (0 === detectedPath.length) {
       vs.window.showWarningMessage(
-        'execute path is empty! please check ruby.rubocop.executePath'
+        'execute path is empty! please check ruby.packwerk.executePath'
       );
     }
     command = detectedPath + cmd;
@@ -72,12 +70,11 @@ export const getConfig: () => RubocopConfig = () => {
     configFilePath: conf.get('configFilePath', ''),
     onSave: conf.get('onSave', true),
     useBundler,
-    suppressRubocopWarnings,
   };
 };
 
-export const onDidChangeConfiguration: (rubocop: Rubocop) => () => void = (
-  rubocop
+export const onDidChangeConfiguration: (packwerk: Packwerk) => () => void = (
+  packwerk
 ) => {
-  return () => (rubocop.config = getConfig());
+  return () => (packwerk.config = getConfig());
 };

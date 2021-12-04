@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Rubocop, RubocopAutocorrectProvider } from './rubocop';
+import { Packwerk } from './packwerk';
 import { onDidChangeConfiguration } from './configuration';
 
 // entry point of extension
@@ -9,42 +9,33 @@ export function activate(context: vscode.ExtensionContext): void {
   const diag = vscode.languages.createDiagnosticCollection('ruby');
   context.subscriptions.push(diag);
 
-  const rubocop = new Rubocop(diag);
-  const disposable = vscode.commands.registerCommand('ruby.rubocop', () => {
+  const packwerk = new Packwerk(diag);
+  const disposable = vscode.commands.registerCommand('ruby.packwerk', () => {
     const document = vscode.window.activeTextEditor.document;
-    rubocop.execute(document);
+    packwerk.execute(document);
   });
 
   context.subscriptions.push(disposable);
 
   const ws = vscode.workspace;
 
-  ws.onDidChangeConfiguration(onDidChangeConfiguration(rubocop));
+  ws.onDidChangeConfiguration(onDidChangeConfiguration(packwerk));
 
   ws.textDocuments.forEach((e: vscode.TextDocument) => {
-    rubocop.execute(e);
+    packwerk.execute(e);
   });
 
   ws.onDidOpenTextDocument((e: vscode.TextDocument) => {
-    rubocop.execute(e);
+    packwerk.execute(e);
   });
 
   ws.onDidSaveTextDocument((e: vscode.TextDocument) => {
-    if (rubocop.isOnSave) {
-      rubocop.execute(e);
+    if (packwerk.isOnSave) {
+      packwerk.execute(e);
     }
   });
 
   ws.onDidCloseTextDocument((e: vscode.TextDocument) => {
-    rubocop.clear(e);
+    packwerk.clear(e);
   });
-  const formattingProvider = new RubocopAutocorrectProvider();
-  vscode.languages.registerDocumentFormattingEditProvider(
-    'ruby',
-    formattingProvider
-  );
-  vscode.languages.registerDocumentFormattingEditProvider(
-    'gemfile',
-    formattingProvider
-  );
 }

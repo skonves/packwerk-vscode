@@ -11,7 +11,7 @@ vsStub.workspace.getConfiguration = (
   section?: string,
   resource?: vsStub.Uri | null
 ): any => {
-  if (section !== 'ruby.rubocop') {
+  if (section !== 'ruby.packwerk') {
     return _getConfiguration(section, resource);
   }
 

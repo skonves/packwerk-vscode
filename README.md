@@ -1,23 +1,21 @@
-# Rubocop for Visual Studio Code
+# Packwerk for Visual Studio Code
 
-![travis status](https://travis-ci.org/misogi/vscode-ruby-rubocop.svg?branch=master)
+<!-- ![travis status](https://travis-ci.org/misogi/vscode-ruby-rubocop.svg?branch=master) -->
 
-Visual Studio Code で rubocop を実行するエクステンションです。
+Visual Studio Code Packwerk。
 
-This extension provides interfaces to rubocop for vscode.
+This extension provides interfaces to packwerk for vscode.
 
-[rubocop](https://github.com/bbatsov/rubocop) is a code analyzer for ruby.
+[Packwerk](https://github.com/Shopify/packwerk) is a Ruby gem used to enforce boundaries and modularize Rails applications.
 
-[ruby rubocop in Code Market Place](https://marketplace.visualstudio.com/items/misogi.ruby-rubocop)
+<!-- [ruby rubocop in Code Market Place](https://marketplace.visualstudio.com/items/misogi.ruby-rubocop) -->
 
-![exec on save](./images/onsave.gif)
+<!-- ![exec on save](./images/onsave.gif) -->
 
 ## Problems
 
 This extension may have problems when using a rvm or chruby environment.
 We recommend [vscode-ruby](https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby). It can also lint ruby code.
-
-When autoCorrect is enabled, the history of changing file is broken.
 
 ## Features
 
@@ -53,29 +51,20 @@ Specify configuration (via navigating to `File > Preferences > Workspace Setting
 
 ```javascript
 {
-  // If not specified searches for 'rubocop' executable available on PATH (default and recommended)
-  "ruby.rubocop.executePath": "",
+  // If not specified searches for 'packwerk' executable available on PATH (default and recommended)
+  "ruby.packwerk.executePath": "",
 
   // You can use specific path
-  // "ruby.rubocop.executePath": "/Users/you/.rbenv/shims/"
-  // "ruby.rubocop.executePath": "/Users/you/.rvm/gems/ruby-2.3.2/bin/"
-  // "ruby.rubocop.executePath": "D:/bin/Ruby22-x64/bin/"
+  // "ruby.packwerk.executePath": "/Users/you/.rbenv/shims/"
+  // "ruby.packwerk.executePath": "/Users/you/.rvm/gems/ruby-2.3.2/bin/"
+  // "ruby.packwerk.executePath": "D:/bin/Ruby22-x64/bin/"
 
   // If not specified, it assumes a null value by default.
-  "ruby.rubocop.configFilePath": "/path/to/config/.rubocop.yml",
+  "ruby.packwerk.configFilePath": "/path/to/config/.rubocop.yml",
 
   // default true
-  "ruby.rubocop.onSave": true
+  "ruby.packwerk.onSave": true
 }
-```
-
-### Keybindings
-
-You can change the keybinding (via editing `keybindings.json`)
-
-```javascript
-{ "key": "ctrl+alt+l",          "command": "ruby.rubocopAutocorrect",
-                                "when": "editorLangId == 'ruby'" }
 ```
 
 # todo
