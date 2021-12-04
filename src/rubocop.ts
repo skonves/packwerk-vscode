@@ -1,4 +1,8 @@
-import { RubocopOutput, RubocopFile, RubocopOffense } from './rubocopOutput';
+import {
+  PackwerkOutput,
+  PackwerkFile,
+  PackwerkViolation,
+} from './rubocopOutput';
 import { TaskQueue, Task } from './taskQueue';
 import * as cp from 'child_process';
 import * as fs from 'fs';
@@ -6,6 +10,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { getConfig, RubocopConfig } from './configuration';
 import * as os from 'os';
+import { parseOutput } from './outputParser';
 
 export class RubocopAutocorrectProvider
   implements vscode.DocumentFormattingEditProvider {
@@ -83,11 +88,7 @@ function getCurrentPath(fileName: string): string {
 
 // extract argument to an array
 function getCommandArguments(fileName: string): string[] {
-  let commandArguments = [
-    '--stdin',
-    fileName,
-    '--force-exclusion',
-  ];
+  let commandArguments = ['--stdin', fileName, '--force-exclusion'];
   const extensionConfig = getConfig();
   if (extensionConfig.configFilePath !== '') {
     let found = [extensionConfig.configFilePath]
@@ -155,19 +156,23 @@ export class Rubocop {
       this.diag.delete(uri);
 
       let entries: [vscode.Uri, vscode.Diagnostic[]][] = [];
-      rubocop.files.forEach((file: RubocopFile) => {
+      rubocop.files.forEach((file: PackwerkFile) => {
         let diagnostics = [];
-        file.offenses.forEach((offence: RubocopOffense) => {
+        file.violations.forEach((offence: PackwerkViolation) => {
           const loc = offence.location;
           const range = new vscode.Range(
             loc.line - 1,
-            loc.column - 1,
+            loc.column,
             loc.line - 1,
-            loc.length + loc.column - 1
+            loc.length + loc.column
           );
-          const sev = this.severity(offence.severity);
-          const message = `${offence.message} (${offence.severity}:${offence.cop_name})`;
-          const diagnostic = new vscode.Diagnostic(range, message, sev);
+          // const sev = this.severity(offence.severity);
+          const message = `${offence.message} (${offence.type})`;
+          const diagnostic = new vscode.Diagnostic(
+            range,
+            message,
+            vscode.DiagnosticSeverity.Error
+          );
           diagnostics.push(diagnostic);
         });
         entries.push([uri, diagnostics]);
@@ -176,8 +181,10 @@ export class Rubocop {
       this.diag.set(entries);
     };
 
-    const jsonOutputFormat = ['--format', 'json']
-    const args = getCommandArguments(fileName).concat(this.additionalArguments).concat(jsonOutputFormat);
+    const jsonOutputFormat = ['--format', 'json'];
+    const args = getCommandArguments(fileName)
+      .concat(this.additionalArguments)
+      .concat(jsonOutputFormat);
 
     let task = new Task(uri, (token) => {
       let process = this.executeRubocop(
@@ -231,8 +238,8 @@ export class Rubocop {
   }
 
   // parse rubocop(JSON) output
-  private parse(output: string): RubocopOutput | null {
-    let rubocop: RubocopOutput;
+  private parse(output: string): PackwerkOutput | null {
+    let packwerk: PackwerkOutput;
     if (output.length < 1) {
       let message = `command ${this.config.command} returns empty output! please check configuration.`;
       vscode.window.showWarningMessage(message);
@@ -241,7 +248,7 @@ export class Rubocop {
     }
 
     try {
-      rubocop = JSON.parse(output);
+      packwerk = parseOutput(output);
     } catch (e) {
       if (e instanceof SyntaxError) {
         let regex = /[\r\n \t]/g;
@@ -253,7 +260,7 @@ export class Rubocop {
       }
     }
 
-    return rubocop;
+    return packwerk;
   }
 
   // checking rubocop output has error

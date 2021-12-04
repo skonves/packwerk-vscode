@@ -1,39 +1,20 @@
-// output of rubocop JSON format
-interface RubocopSummary {
-  offence_count: number;
-  target_file_count: number;
-  inspected_file_count: number;
-}
-
-interface RubocopLocation {
+interface PackwerkLocation {
   line: number;
   column: number;
   length: number;
 }
 
-export interface RubocopOffense {
-  severity: string;
+export interface PackwerkViolation {
   message: string;
-  cop_name: string;
-  corrected: boolean;
-  location: RubocopLocation;
+  type: string;
+  location: PackwerkLocation;
 }
 
-export interface RubocopFile {
+export interface PackwerkFile {
   path: string;
-  offenses: Array<RubocopOffense>;
+  violations: Array<PackwerkViolation>;
 }
 
-interface RubocopMetadata {
-  rubocop_version: string;
-  rubocop_engine: string;
-  ruby_version: string;
-  ruby_patchlevel: string;
-  ruby_platform: string;
-}
-
-export interface RubocopOutput {
-  metadata: RubocopMetadata;
-  files: Array<RubocopFile>;
-  summary: RubocopSummary;
+export interface PackwerkOutput {
+  files: Array<PackwerkFile>;
 }

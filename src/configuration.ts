@@ -44,13 +44,12 @@ const autodetectExecutePath: (cmd: string) => string = (cmd) => {
  * @return {RubocopConfig} config object
  */
 export const getConfig: () => RubocopConfig = () => {
-  const win32 = process.platform === 'win32';
-  const cmd = win32 ? 'rubocop.bat' : 'rubocop';
+  const cmd = 'bin/packwerk check';
   const conf = vs.workspace.getConfiguration('ruby.rubocop');
   let useBundler = conf.get('useBundler', false);
   let configPath = conf.get('executePath', '');
   let suppressRubocopWarnings = conf.get('suppressRubocopWarnings', false);
-  let command;
+  let command: string;
 
   // if executePath is present in workspace config, use it.
   if (configPath.length !== 0) {
