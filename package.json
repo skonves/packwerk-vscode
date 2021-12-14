@@ -1,16 +1,16 @@
 {
-  "name": "ruby-rubocop",
-  "version": "0.8.5",
-  "publisher": "misogi",
-  "displayName": "ruby-rubocop",
-  "description": "execute rubocop for current Ruby code.",
+  "name": "packwerk-vscode",
+  "version": "0.0.1",
+  "publisher": "gusto",
+  "displayName": "packwerk-vscode",
+  "description": "execute packwerk check for current Ruby code.",
   "engines": {
     "vscode": "^1.32.0"
   },
-  "icon": "images/rubocop.png",
+  "icon": "images/package.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/misogi/vscode-ruby-rubocop.git"
+    "url": "https://github.com/skonves/vscode-packwerk-vscode.git"
   },
   "categories": [
     "Programming Languages",
@@ -18,7 +18,7 @@
   ],
   "activationEvents": [
     "onLanguage:ruby",
-    "onCommand:ruby.rubocop"
+    "onCommand:ruby.packwerk"
   ],
   "main": "./out/src/extension",
   "scripts": {
@@ -45,49 +45,28 @@
     ],
     "commands": [
       {
-        "command": "ruby.rubocop",
-        "title": "Ruby: lint by rubocop"
-      },
-      {
-        "command": "editor.action.formatDocument",
-        "title": "Ruby: autocorrect by rubocop"
-      }
-    ],
-    "keybindings": [
-      {
-        "key": "shift+ctrl+r",
-        "command": "editor.action.formatDocument",
-        "when": "editorLangId == 'ruby' || editorLangId == 'gemfile'"
+        "command": "ruby.packwerk",
+        "title": "Packwerk: Run packwerk check"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "Ruby-Rubocop configuration",
+      "title": "Packwerk-VScode configuration",
       "properties": {
-        "ruby.rubocop.executePath": {
+        "ruby.packwerk.executable": {
           "type": "string",
-          "default": "",
-          "description": "execution path of rubocop."
+          "default": "bin/packwerk",
+          "description": "execution path of packwerk check. `bin/packwerk check` is the default. Other example is `bundle exec packwerk check`"
         },
-        "ruby.rubocop.configFilePath": {
-          "type": "string",
-          "default": "",
-          "description": "Filepath to the configuration file for Rubocop"
-        },
-        "ruby.rubocop.onSave": {
+        "ruby.packwerk.onSave": {
           "type": "boolean",
           "default": true,
-          "description": "execute rubocop on save."
+          "description": "execute packwerk on save, default true"
         },
-        "ruby.rubocop.useBundler": {
+        "ruby.packwerk.showWarnings": {
           "type": "boolean",
           "default": false,
-          "description": "execute rubocop using bundler (ie 'bundle exec rubocop')"
-        },
-        "ruby.rubocop.suppressRubocopWarnings": {
-          "type": "boolean",
-          "default": false,
-          "description": "Suppress warnings from rubocop and attempt to run regardless. (Useful if you share a rubocop.yml file and run into unrecognized cop errors you know are okay.)"
+          "description": "show warnings, default false"
         }
       }
     }

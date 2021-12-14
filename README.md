@@ -1,51 +1,24 @@
-# Rubocop for Visual Studio Code
+# Packwerk for Visual Studio Code
 
-![travis status](https://travis-ci.org/misogi/vscode-ruby-rubocop.svg?branch=master)
+This extension provides an interface to packwerk for vscode.
 
-Visual Studio Code で rubocop を実行するエクステンションです。
+[packwerk](https://github.com/Shopify/packwerk/) helps modularize large Rails monoliths
 
-This extension provides interfaces to rubocop for vscode.
+TODO [packwerk-vscode in Code Market Place](https://marketplace.visualstudio.com/items/TODO)
 
-[rubocop](https://github.com/bbatsov/rubocop) is a code analyzer for ruby.
-
-[ruby rubocop in Code Market Place](https://marketplace.visualstudio.com/items/misogi.ruby-rubocop)
-
-![exec on save](./images/onsave.gif)
-
-## Problems
-
-This extension may have problems when using a rvm or chruby environment.
-We recommend [vscode-ruby](https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby). It can also lint ruby code.
-
-When autoCorrect is enabled, the history of changing file is broken.
+![exec on save](./images/packwerk-vscode.gif)
 
 ## Features
+- auto invoke when saving/opening a file
 
-- lint by executing the command "Ruby: lint by rubocop" (cmd+shift+p and type command)
-- auto invoke when saving file
-- auto correct command "Ruby: autocorrect by rubocop"
+## Future Features
+- automatically update deprecated references
+  - possibly allow for updating a single file rather than a pack
+- click to open public API where constant lives
 
-### Exclude file
+## Stability
 
-The extension forces rubocop's `force-exclusion` option.
-
-If you do not want rubocop to be executed on some file, you can add AllCops/Exclude in rubocop.yml. The file can be saved without executing rubocop.
-
-# Installation
-
-Installation of ruby and rubocop is required.
-
-```
-gem install rubocop
-```
-
-- Type F1 (or Command + Shift + P)
-- execute "Extensions: install extension"
-- type rubocop and execute `ext install ruby-rubocop`
-
-# ChangeLog
-
-[ChangeLog](CHANGELOG.md)
+This is version 0.0.1. This is an alpha extension that is not guaranteed to work. We encourage you to experiment with it and provide feedback!
 
 ## Configuration
 
@@ -53,35 +26,17 @@ Specify configuration (via navigating to `File > Preferences > Workspace Setting
 
 ```javascript
 {
-  // If not specified searches for 'rubocop' executable available on PATH (default and recommended)
-  "ruby.rubocop.executePath": "",
-
-  // You can use specific path
-  // "ruby.rubocop.executePath": "/Users/you/.rbenv/shims/"
-  // "ruby.rubocop.executePath": "/Users/you/.rvm/gems/ruby-2.3.2/bin/"
-  // "ruby.rubocop.executePath": "D:/bin/Ruby22-x64/bin/"
-
-  // If not specified, it assumes a null value by default.
-  "ruby.rubocop.configFilePath": "/path/to/config/.rubocop.yml",
+  // If not specified, uses `bin/packwerk` (default and recommended, as this is what the packwerk setup guide recommends for executing packwerk)
+  // You may want to change this if, for example, you have a remote development environment that executes packwerk in a remote box.
+  "ruby.packwerk.exectable": "",
 
   // default true
-  "ruby.rubocop.onSave": true
+  "ruby.packwerk.onSave": true
 }
-```
-
-### Keybindings
-
-You can change the keybinding (via editing `keybindings.json`)
-
-```javascript
-{ "key": "ctrl+alt+l",          "command": "ruby.rubocopAutocorrect",
-                                "when": "editorLangId == 'ruby'" }
 ```
 
 # todo
 
-- more configurable command line options (like -R)
-- integration with rbenv
 - testing & CI support
 
 # Contribute with this extension
@@ -99,7 +54,5 @@ yarn prettier src/* test/* --write
 ```
 
 # License
-
-このソフトウェアは MIT ライセンスの元で公開されています。[LICENSE.txt](LICENSE.txt) をご覧下さい。
 
 This software is released under the MIT License, see [LICENSE.txt](LICENSE.txt).
