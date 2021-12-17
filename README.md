@@ -56,3 +56,7 @@ yarn prettier src/* test/* --write
 # License
 
 This software is released under the MIT License, see [LICENSE.txt](LICENSE.txt).
+
+# Kudos
+
+Thanks to https://github.com/misogi/vscode-ruby-rubocop which this was modeled off of.
