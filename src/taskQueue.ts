@@ -70,7 +70,7 @@ export class Task {
 
 /**
  * Provides single-threaded task queue which runs single asynchronous
- * Task at a time. This restricts concurrent execution of rubocop
+ * Task at a time. This restricts concurrent execution of packwerk
  * processes to prevent from running out machine resource.
  */
 export class TaskQueue {
@@ -85,6 +85,7 @@ export class TaskQueue {
     if (task.isEnqueued) {
       throw new Error('Task is already enqueued. (uri: ' + task.uri + ')');
     }
+
     this.cancel(task.uri);
     task.isEnqueued = true;
     this.tasks.push(task);
@@ -95,6 +96,7 @@ export class TaskQueue {
     let uriString = uri.toString(true);
     this.tasks.forEach((task) => {
       if (task.uri.toString(true) === uriString) {
+        console.debug(`[DEBUG] Canceling existing task for ${task.uri}`)
         task.cancel();
       }
     });
@@ -114,7 +116,7 @@ export class TaskQueue {
       try {
         await task.run();
       } catch (e) {
-        console.error('Error while running rubocop: ', e.message, e.stack);
+        console.error('Error while running packwerk: ', e.message, e.stack);
       }
       this.tasks.shift();
     }

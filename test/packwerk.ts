@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 import * as vscode from 'vscode';
-import { Rubocop } from '../src/rubocop';
+import { Packwerk } from '../src/packwerk';
 
-describe('Rubocop', () => {
-  let instance: Rubocop;
+describe('Packwerk', () => {
+  let instance: Packwerk;
   let diagnostics: vscode.DiagnosticCollection;
 
   beforeEach(() => {
     diagnostics = vscode.languages.createDiagnosticCollection();
-    instance = new Rubocop(diagnostics);
+    instance = new Packwerk(diagnostics);
   });
 
   describe('initialization', () => {
