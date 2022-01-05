@@ -11,11 +11,6 @@ TODO [packwerk-vscode in Code Market Place](https://marketplace.visualstudio.com
 ## Features
 - auto invoke when saving/opening a file
 
-## Future Features
-- automatically update deprecated references
-  - possibly allow for updating a single file rather than a pack
-- click to open public API where constant lives
-
 ## Stability
 
 This is version 0.0.1. This is an alpha extension that is not guaranteed to work. We encourage you to experiment with it and provide feedback!
@@ -34,10 +29,6 @@ Specify configuration (via navigating to `File > Preferences > Workspace Setting
   "ruby.packwerk.onSave": true
 }
 ```
-
-# todo
-
-- testing & CI support
 
 # Contribute with this extension
 
