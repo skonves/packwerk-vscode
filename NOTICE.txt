@@ -1,6 +1,9 @@
+This product includes code from https://github.com/misogi/vscode-ruby-rubocop, which includes the following in
+its LICENSE file:
+
 MIT License
 
-Copyright (c) 2022 Gusto
+Copyright (c) 2017 Misogi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
